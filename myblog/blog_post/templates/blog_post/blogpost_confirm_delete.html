@@ -4,10 +4,6 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block header %}
-        <div class="buttons">
-            <button class="post-buttons"><a href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
-            <button class="post-buttons"><a href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
-        </div>
 	<ul class="navbar-nav navigation-menu ml-auto">
 	{% for element in menu %}
 		<li class="nav-item">
