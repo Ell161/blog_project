@@ -1,5 +1,6 @@
 import random
 from typing import Dict
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from .forms import BlogPostForm
@@ -20,13 +21,16 @@ class Posts(ListView):
     model = BlogPost
     template_name = 'blog_post/blog.html'
     context_object_name = 'posts'
-    paginate_by = 6
+    paginate_by = 3
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                           {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                           {'title': 'Войти', 'url_name': 'posts:posts'}]
+        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                    {'title': 'Войти', 'url_name': 'account:login'}]
         context['title'] = 'Страницы из дневника'
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -37,7 +41,7 @@ class Posts(ListView):
         return BlogPost.objects.filter(is_published=True)
 
 
-class CreatePost(CreateView):
+class CreatePost(LoginRequiredMixin, CreateView):
     template_name = 'blog_post/create_post.html'
     form_class = BlogPostForm
     things = ['От счастья до депрессии – одна мысль. (Б. Спиноза)',
@@ -53,7 +57,7 @@ class CreatePost(CreateView):
         context = super().get_context_data(**kwargs)
         context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                            {'title': 'Личный кабинет', 'url_name': 'posts:new_post'},
-                           {'title': 'Выход', 'url_name': 'posts:posts'}]
+                           {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['title'] = 'Новая страница'
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -75,7 +79,7 @@ class PostDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                            {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                           {'title': 'Войти', 'url_name': 'posts:posts'}]
+                           {'title': 'Войти', 'url_name': 'account:login'}]
         context['title'] = self.object.title
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -83,7 +87,7 @@ class PostDetail(DetailView):
         return context
 
 
-class UpdatePost(UpdateView):
+class UpdatePost(UserPassesTestMixin, UpdateView):
     model = BlogPost
     template_name = 'blog_post/create_post.html'
     form_class = BlogPostForm
@@ -95,13 +99,16 @@ class UpdatePost(UpdateView):
               'Столько есть всего, о чём надо подумать. Зачем забивать себе голову тем, чего уже не вернёшь, '
               '— надо думать о том, что ещё можно изменить. (Маргарет Митчелл)',
               '— Почему ты все время думаешь? — Потому что мир в моей голове интереснее, чем этот.',
-              'Она вовсе не выбирала его. Просто ни о ком другом она не думала...']
+              'Она вовсе не выбирала его. Просто ни о ком другом она не думала...',
+              'Не ждите. Время никогда не будет подходящим.',
+              'Служба поддержки текущей действительности у аппарата. Какие иллюзии вам требуется развеять?',
+              'Есенин писал: "Своею гордою душою, прошел я счастье стороной"...задумайтесь.']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                            {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                           {'title': 'Выход', 'url_name': 'posts:posts'}]
+                           {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['title'] = 'Новая страница'
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -116,8 +123,11 @@ class UpdatePost(UpdateView):
     def get_success_url(self) -> str:
         return reverse('posts:post-detail', kwargs={'id': self.object.pk})
 
+    def test_func(self):
+        return self.get_object().author_id == self.request.user.pk
 
-class DeletePost(DeleteView):
+
+class DeletePost(UserPassesTestMixin, DeleteView):
     model = BlogPost
     success_url = reverse_lazy('posts:posts')
     pk_url_kwarg = 'id'
@@ -127,3 +137,7 @@ class DeletePost(DeleteView):
 
     def get_success_url(self) -> str:
         return reverse('posts:posts')
+
+    def test_func(self):
+        return self.get_object().author_id == self.request.user.pk
+

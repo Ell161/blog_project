@@ -5,11 +5,19 @@
 
 {% block header %}
 	<ul class="navbar-nav navigation-menu ml-auto">
-	{% for element in menu %}
+    {% if request.user.is_authenticated %}
+	{% for element in menu_auth %}
 		<li class="nav-item">
 		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
 		</li>
 	{% endfor %}
+    {% else %}
+      {% for element in menu_not_auth %}
+		<li class="nav-item">
+		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+		</li>
+	  {% endfor %}
+    {% endif %}
 	</ul>
 {% endblock %}
 
@@ -33,7 +41,7 @@
             <img src="{% static 'blog_post/images/blog/blog-post-1.jpg' %}" alt="amazing caves coverimage" class="w-100">
           </div>
           <div class="content">
-            <h3><a href="index.html">{{ post.title|truncatechars:50 }}</a></h3>
+            <h3><a href="{% url 'posts:post-detail' post.pk %}">{{ post.title|truncatechars:50 }}</a></h3>
             <p>{{ post.text|truncatechars:155 }}</p>
             <a class="btn btn-transparent" href="{% url 'posts:post-detail' post.pk %}">Читать дальше</a>
           </div>
@@ -41,18 +49,17 @@
       </article>
       {% endfor %}
       <!-- /single blog post -->
-
+      {% if is_paginated %}
       <div class="col-12">
         <nav aria-label="Page navigation example">
           <ul class="pagination pagination-lg justify-content-center">
-            <li class="page-item"><a class="page-link" href="blog.html">&laquo;</a></li>
-            <li class="page-item"><a class="page-link" href="blog.html">1</a></li>
-            <li class="page-item"><a class="page-link" href="blog.html">2</a></li>
-            <li class="page-item"><a class="page-link" href="blog.html">3</a></li>
-            <li class="page-item"><a class="page-link" href="blog.html">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" href="{% if page_obj.has_previous %} ?page={{ page_obj.previous_page_number }} {% endif %}">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+            <li class="page-item"><a class="page-link" href="{% if page_obj.has_next %} ?page={{ page_obj.next_page_number }} {% endif %}">&raquo;</a></li>
           </ul>
         </nav>
       </div>
+      {% endif %}
     </div> <!-- end row -->
   </div> <!-- end container -->
 </section> <!-- end section -->

@@ -22,6 +22,7 @@ from myblog import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('blog_post.urls')),
+    path('account/', include('account.urls')),
 ]
 
 if settings.DEBUG:
