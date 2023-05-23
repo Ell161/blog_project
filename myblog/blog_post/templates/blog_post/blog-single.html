@@ -12,11 +12,19 @@
         </div>
     {% endif %}
 	<ul class="navbar-nav navigation-menu ml-auto">
-	{% for element in menu %}
+	{% if request.user.is_authenticated %}
+	{% for element in menu_auth %}
 		<li class="nav-item">
-		    <a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
 		</li>
 	{% endfor %}
+    {% else %}
+      {% for element in menu_not_auth %}
+		<li class="nav-item">
+		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+		</li>
+	  {% endfor %}
+    {% endif %}
 	</ul>
 {% endblock %}
 
@@ -37,7 +45,6 @@
           <li class="list-inline-item">Thomas Jonson</li>
           <li class="list-inline-item">{{ post.timestamp }}</li>
         </ul>
-        <img class="mb-50" src="{% static 'blog_post/images/blog/blog-single.jpg' %}" alt="blog-image">
       </div>
       {% with post.text|split as paragraphs %}
       {% for p in paragraphs %}

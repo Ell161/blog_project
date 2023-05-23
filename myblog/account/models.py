@@ -38,6 +38,9 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    def user_directory_path(self, filename):
+        return 'avatars/user_{0}/{1}'.format(self.pk, filename)
+
     username = None
     ordering = ('email',)
 
@@ -45,8 +48,8 @@ class User(AbstractUser):
     nickname = models.CharField(_('nickname'), max_length=30, blank=False, unique=True)
     last_name = models.CharField(_('surname'), max_length=30, blank=True)
     first_name = models.CharField(_('name'), max_length=30, blank=True)
-    birthday = models.DateField(blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True)
+    birthday = models.DateField(_("birthday"), blank=True, null=True)
+    avatar = models.ImageField(_("avatar"), upload_to=user_directory_path, blank=True)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(_('active'), default=True)

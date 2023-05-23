@@ -1,9 +1,12 @@
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import request
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 
 from .forms import *
+from blog_post.models import BlogPost
 
 
 class UserLoginView(LoginView):
@@ -66,3 +69,46 @@ class RegisterUserView(CreateView):
         context['button'] = 'Сохранить'
         context['reset'] = ''
         return context
+
+
+class UserPostListView(ListView):
+    model = BlogPost
+    template_name = 'account/personal_page.html'
+    context_object_name = 'posts'
+    paginate_by = 20
+
+    def get_queryset(self):
+        user = get_object_or_404(User, pk=self.request.user.pk)
+        return BlogPost.objects.filter(author=user)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                    {'title': 'Войти', 'url_name': 'account:login'}]
+        context['title'] = 'Личный кабинет'
+        return context
+
+
+class UserUpdateInfo(UpdateView):
+    context_object_name = 'variable_used_in `update.html`'
+    form_class = UserUpdateForm
+    template_name = 'account/personal_info_update.html'
+    success_url = reverse_lazy('account:account')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                    {'title': 'Войти', 'url_name': 'account:login'}]
+        context['title'] = 'Личный кабинет'
+        return context
+
+    def get_object(self, queryset=None):
+        return self.request.user

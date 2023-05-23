@@ -38,15 +38,14 @@
 
 <style>
 body {
-	background: linear-gradient( rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7) ), url("{% static 'account/images/blog/login.jpg' %}");
+	background: linear-gradient( rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7) ), url("{% static 'account/images/blog/personal.jpg' %}");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-attachment: fixed;
 	background-position: top;
 }
 </style>
-
-<body id="home" data-spy="scroll" data-target=".navbar-nav" data-offset="80">
+<body data-target=".navbar-nav" data-offset="80" class="personal-page">
 	<!--
 	Start Preloader
 	==================================== -->
@@ -81,9 +80,19 @@ Fixed Navigation
 
         <div class="collapse navbar-collapse" id="navbar01">
 		<ul class="navbar-nav navigation-menu ml-auto">
+		{% if request.user.is_authenticated %}
+		{% for element in menu_auth %}
 			<li class="nav-item">
-			<a class="nav-link" href="{% url 'posts:posts' %}">MySecret</a>
+			<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
 			</li>
+		{% endfor %}
+		{% else %}
+		  {% for element in menu_not_auth %}
+			<li class="nav-item">
+			<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+			</li>
+		  {% endfor %}
+		{% endif %}
 		</ul>
         </div>
       </nav>
@@ -95,31 +104,32 @@ End Fixed Navigation
 ==================================== -->
 <section class="section">
   <div class="container">
-	<div class="post-form">
-		<div class="contact-form col-lg-6 mt-4 mt-lg-0" >
-		  <div class="col-lg-12 text-center">
-			<h1 class="quote text-center">{{ title }}</h1>
-		  </div>
-			{% if form.non_field_errors %}
-				<span class="message text-center">{{ form.non_field_errors }}</span>
-			{% endif %}
-			<form id="contact-form" method="post">
+		<div class="personal-info-update wow fadeInDown">
+			<form id="form-update-user" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				{% for field in form %}
-				{% if field.errors %}
-					<span class="text-center">{{ field.errors }}</span>
-				{% endif %}
-				<div class="form-group">
+				{% if field == form.avatar %}
+				<div class="avatar-block">
+					<span class="label-update-form">{{ field.label }}</span>
+					<div class="imgUp">
+						<div class="imagePreview"></div>
+						<label class="btn-primary">
+							<input type="file" class="uploadFile img" value="Upload Photo" style="width: 0px;height: 0px;overflow: hidden;">
+						</label>
+					</div>
+				</div>
+				{% else %}
+				<div class="field-update-user">
+					<span class="label-update-form">{{ field.label }}</span>
 					{{ field }}
 				</div>
+				{% endif %}
 				{% endfor %}
 				<div id="cf-submit">
-					<input type="submit" class="btn btn-transparent" value="{{ button }}">
+					<input type="submit" class="btn btn-transparent" value="Сохранить">
 				</div>
 			</form>
-			<span class="message text-center"><a class="nav-link" href="{% url 'account:password_reset' %}">{{ reset }}</a></span>
 		</div>
-	</div>
   </div>
 </section>
 <!-- end Contact Area

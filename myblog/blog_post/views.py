@@ -27,6 +27,7 @@ class Posts(ListView):
         context = super().get_context_data(**kwargs)
         context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                 {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
                                 {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                     {'title': 'Новая страница', 'url_name': 'posts:new_post'},
@@ -56,7 +57,7 @@ class CreatePost(LoginRequiredMixin, CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                           {'title': 'Личный кабинет', 'url_name': 'posts:new_post'},
+                           {'title': 'Личный кабинет', 'url_name': 'account:account'},
                            {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['title'] = 'Новая страница'
         header = get_header(context['title'])
@@ -64,6 +65,12 @@ class CreatePost(LoginRequiredMixin, CreateView):
         context['header_second'] = header['second']
         context['thing'] = random.choice(self.things)
         return context
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.author = self.request.user
+        instance.save()
+        return super().form_valid(form)
 
     def get_success_url(self) -> str:
         return reverse('posts:post-detail', kwargs={'id': self.object.pk})

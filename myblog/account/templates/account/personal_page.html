@@ -38,15 +38,14 @@
 
 <style>
 body {
-	background: linear-gradient( rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7) ), url("{% static 'account/images/blog/login.jpg' %}");
+	background: linear-gradient( rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7) ), url("{% static 'account/images/blog/personal.jpg' %}");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-attachment: fixed;
 	background-position: top;
 }
 </style>
-
-<body id="home" data-spy="scroll" data-target=".navbar-nav" data-offset="80">
+<body data-target=".navbar-nav" data-offset="80" class="personal-page">
 	<!--
 	Start Preloader
 	==================================== -->
@@ -81,9 +80,19 @@ Fixed Navigation
 
         <div class="collapse navbar-collapse" id="navbar01">
 		<ul class="navbar-nav navigation-menu ml-auto">
+		{% if request.user.is_authenticated %}
+		{% for element in menu_auth %}
 			<li class="nav-item">
-			<a class="nav-link" href="{% url 'posts:posts' %}">MySecret</a>
+			<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
 			</li>
+		{% endfor %}
+		{% else %}
+		  {% for element in menu_not_auth %}
+			<li class="nav-item">
+			<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+			</li>
+		  {% endfor %}
+		{% endif %}
 		</ul>
         </div>
       </nav>
@@ -95,31 +104,39 @@ End Fixed Navigation
 ==================================== -->
 <section class="section">
   <div class="container">
-	<div class="post-form">
-		<div class="contact-form col-lg-6 mt-4 mt-lg-0" >
-		  <div class="col-lg-12 text-center">
-			<h1 class="quote text-center">{{ title }}</h1>
-		  </div>
-			{% if form.non_field_errors %}
-				<span class="message text-center">{{ form.non_field_errors }}</span>
-			{% endif %}
-			<form id="contact-form" method="post">
-				{% csrf_token %}
-				{% for field in form %}
-				{% if field.errors %}
-					<span class="text-center">{{ field.errors }}</span>
-				{% endif %}
-				<div class="form-group">
-					{{ field }}
-				</div>
-				{% endfor %}
-				<div id="cf-submit">
-					<input type="submit" class="btn btn-transparent" value="{{ button }}">
-				</div>
-			</form>
-			<span class="message text-center"><a class="nav-link" href="{% url 'account:password_reset' %}">{{ reset }}</a></span>
+	<div class="personal-block  wow fadeInDown">
+		<div class="personal-photo">
+			<img src="images/team/client-1.jpg" class="img-fluid" alt="Meghna">
 		</div>
+		<div class="personal-info">
+			<div class="user-nickname">
+				<h3 class="nickname text-center">{{ user.nickname }}</h3>
+				<a href="{% url 'account:user_update' %}"><img src="{% static 'account/images/blog/edit.png' %}" width="35" height="35"></a>
+			</div>
+				{% if user.first_name %}<p>Имя: {{ user.first_name }}</p>{% endif %}
+				{% if user.last_name %}<p>Фамилия: {{ user.last_name }}</p>{% endif %}
+				{% if user.birthday %}<p>Дата рождения: {{ user.birthday }}</p>{% endif %}
+				{% if user.email %}<p>Email: {{ user.email }}</p>{% endif %}
+		</div>
+		<ol>
+			{% for post in posts %}
+			<li class="list-item-page">
+				<span class="text-center"><a href="{% url 'posts:post-detail' post.pk %}">{{ post.title }}</a><span class="date-page">{{ post.timestamp }}</span></span>
+			</li>
+			{% endfor %}
+		</ol>
 	</div>
+	  {% if is_paginated %}
+      <div class="col-12">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination pagination-lg justify-content-center">
+            <li class="page-item"><a class="page-link" href="{% if page_obj.has_previous %} ?page={{ page_obj.previous_page_number }} {% endif %}">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+            <li class="page-item"><a class="page-link" href="{% if page_obj.has_next %} ?page={{ page_obj.next_page_number }} {% endif %}">&raquo;</a></li>
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
   </div>
 </section>
 <!-- end Contact Area

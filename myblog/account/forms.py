@@ -70,4 +70,33 @@ class RegisterUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['nickname', 'email', 'password1', 'password2']
+        fields = ('nickname', 'email', 'password1', 'password2')
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('avatar', 'nickname', 'last_name', 'first_name', 'birthday', 'email',)
+        labels = {
+            'avatar': 'Аватар',
+            'nickname': 'Никнейм',
+            'last_name': 'Фамилия',
+            'first_name': 'Имя',
+            'birthday': 'Дата рождения',
+            'email': 'Email',
+        }
+        widgets = {
+            'nickname': forms.TextInput(attrs={'class': 'field-update-form'}),
+            'last_name': forms.TextInput(attrs={'class': 'field-update-form'}),
+            'first_name': forms.TextInput(attrs={'class': 'field-update-form'}),
+            'birthday': forms.DateInput(attrs={'type': 'date', 'class': 'field-update-form'}),
+            'email': forms.TextInput(attrs={'class': 'field-update-form'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['nickname'].initial = self.instance.nickname
+        self.fields['last_name'].initial = self.instance.last_name
+        self.fields['first_name'].initial = self.instance.first_name
+        self.fields['birthday'].initial = self.instance.birthday
+        self.fields['email'].initial = self.instance.email

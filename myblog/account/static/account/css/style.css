@@ -26,11 +26,6 @@ html {
 body {
   font-family: "Montserrat-Medium", sans-serif;
   color: #737f8a;
-  background: linear-gradient( rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7) ), url('../images/blog/login.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: top;
 }
 
 h1,
@@ -46,7 +41,6 @@ h6 {
 
 p {
   font-family: "Montserrat-Medium", sans-serif;
-  text-indent: 60px;
 }
 
 /*=================================================================
@@ -707,11 +701,15 @@ a:hover {
   padding-top: 50px;
 }
 
-.post-form {
+.post-form, .personal-block {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   align-content: center;
+}
+
+.personal-block {
+    min-height: 580px;
 }
 
 .contact-form {
@@ -725,7 +723,7 @@ a:hover {
     padding: 50px 35px;
     margin-bottom: 60px;
 }
-.contact-form .form-control {
+.form-control {
   background-color: transparent;
   border: 1px solid rgba(236, 239, 241, 0.07);
   height: 45px;
@@ -1118,8 +1116,9 @@ a:hover {
   margin-bottom: 30px;
 }
 
-.post-text {
+.post-text p {
     text-align: justify;
+    text-indent: 60px;
 }
 
 .entry .post-excerpt {
@@ -1491,4 +1490,147 @@ blockquote {
     display: block;
     margin: 15px 0;
 }
-/*# sourceMappingURL=style.css.map */
+
+.list-item-page {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #57cbcc;
+    list-style: decimal;
+    list-style-position: inside;
+}
+
+.date-page {
+    margin: 0 10px;
+}
+
+.personal-photo {
+  border-radius: 50%;
+  margin: 0 auto;
+  margin-bottom: 35px;
+  max-width: 115px;
+  width: 100%;
+}
+
+.personal-info {
+  margin: 0 auto;
+  margin-bottom: 35px;
+  width: 55%;
+}
+
+.user-nickname {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 35px;
+}
+.nickname {
+    width: 100%
+}
+
+.personal-info-update {
+    margin: 0 auto;
+    margin-bottom: 35px;
+    width: 55%;
+}
+
+.field-update-user {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+
+}
+
+.label-update-form {
+    width: 180px;
+    margin-right: 15px;
+}
+
+.field-update-form {
+    color:#57cbcc;
+    width: 70%;
+    background-color: transparent;
+    border: 1px solid rgba(236, 239, 241, 0.07);
+    height: 45px;
+}
+
+.field-update-form:focus {
+  box-shadow: 0 0 0;
+  color: #57cbcc;
+}
+
+.field-update-form::-webkit-input-placeholder {
+  /*  Chrome, Safari, Opera  */
+  color: #ddd;
+}
+
+.field-update-form:-moz-placeholder {
+  /* Firefox 18- */
+  color: #ddd;
+}
+
+.field-update-form::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #ddd;
+}
+
+.field-update-form:-ms-input-placeholder {
+  /*  Internet Explorer  */
+  color: #ddd;
+}
+
+.field-update-form:hover {
+  border-color: #57cbcc;
+}
+
+.field-update-form:-webkit-autofill {
+    -webkit-text-fill-color: #57cbcc;
+    -webkit-box-shadow: 0 0 0px 1000px gray inset;
+}
+
+.avatar-block {
+    margin-bottom:45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.imgUp {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 180px;
+    margin-bottom:5px;
+    background:url('../images/blog/avatar.png');
+    background-color:#fff;
+    background-size: cover;
+    background-position: center;
+    background-repeat:no-repeat;
+    display: inline-block;
+    box-shadow:0px -3px 6px 2px rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+.btn-primary,
+.btn-primary:hover {
+	text-indent:-9999px;
+	line-height:0;
+	position: relative;
+    bottom: 180px;
+    left: 130px;
+	background:url('../images/blog/upload.png');
+	background-size: contain;
+    background-position: center;
+	height:35px;
+	width:35px;
+	cursor:pointer;
+	float:left;
+}

@@ -131,3 +131,4 @@ MEDIA_URL = 'media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 PASSWORD_RESET_TIMEOUT_DAYS = 1
 LOGIN_URL = '/account/login/'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
