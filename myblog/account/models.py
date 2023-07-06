@@ -39,7 +39,9 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     def user_directory_path(self, filename):
-        return 'avatars/user_{0}/{1}'.format(self.pk, filename)
+        filename = filename.split('.')
+        last = filename.pop()
+        return 'avatars/user_{0}/{1}'.format(self.pk, '.'.join(['photo', last]))
 
     username = None
     ordering = ('email',)
@@ -65,3 +67,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        try:
+            this = User.objects.get(id=self.pk)
+            if this.avatar != self.avatar:
+                this.avatar.delete()
+        except:
+            pass
+        super(User, self).save(*args, **kwargs)

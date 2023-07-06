@@ -5,55 +5,55 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block header %}
-    {% if request.user.is_authenticated %}
-        <div class="buttons">
-            <button class="post-buttons"><a href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
-            <button class="post-buttons"><a href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
-        </div>
-    {% endif %}
-	<ul class="navbar-nav navigation-menu ml-auto">
-	{% if request.user.is_authenticated %}
-	{% for element in menu_auth %}
-		<li class="nav-item">
-		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
-		</li>
-	{% endfor %}
-    {% else %}
-      {% for element in menu_not_auth %}
-		<li class="nav-item">
-		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
-		</li>
-	  {% endfor %}
-    {% endif %}
-	</ul>
+{% if request.user.is_authenticated %}
+<div class="buttons">
+    <button class="post-buttons"><a href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
+    <button class="post-buttons"><a href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
+</div>
+<ul class="navigation-menu ml-auto">
+    {% for element in menu_auth %}
+    <li class="nav-item">
+        <a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<ul class="navigation-menu ml-auto">
+    {% for element in menu_not_auth %}
+    <li>
+        <a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <section class="section">
-  <div class="container">
-    <div class="post-detail">
-      <div class="col-lg-12">
-        <!-- section title -->
-        <div class="title text-center wow fadeInDown">
-          <h2>{{ header_first }}<span class="color"> {{ header_second }}</span></h2>
-          <div class="border"></div>
+    <div class="s-container">
+        <div class="post-detail">
+            <div class="col-lg-12">
+                <!-- section title -->
+                <div class="title text-center wow fadeInDown">
+                    <h2>{{ header_first }}<span class="color"> {{ header_second }}</span></h2>
+                    <div class="border"></div>
+                </div>
+                <!-- /section title -->
+            </div>
+            <div class="col-lg-12">
+                <ul class="list-inline mb-50">
+                    <li class="list-inline-item">Thomas Jonson</li>
+                    <li class="list-inline-item">{{ post.timestamp }}</li>
+                </ul>
+            </div>
+            {% with post.text|split as paragraphs %}
+            {% for p in paragraphs %}
+            <div class="col-lg-12 post-text">
+                <p>{{ p }}</p>
+            </div>
+            {% endfor %}
+            {% endwith %}
         </div>
-        <!-- /section title -->
-      </div>
-      <div class="col-lg-12">
-        <ul class="list-inline mb-50">
-          <li class="list-inline-item">Thomas Jonson</li>
-          <li class="list-inline-item">{{ post.timestamp }}</li>
-        </ul>
-      </div>
-      {% with post.text|split as paragraphs %}
-      {% for p in paragraphs %}
-        <div class="col-lg-12 post-text">
-          <p>{{ p }}</p>
-        </div>
-      {% endfor %}
-      {% endwith %}
     </div>
-  </div>
 </section>
 {% endblock %}

@@ -1,8 +1,9 @@
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import request
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 
 from .forms import *
@@ -29,7 +30,7 @@ class UserLogoutView(LogoutView):
     next_page = 'posts:posts'
 
 
-class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView): #Ошибка аргументов - исправить
     """
     Changing the user's password.
     """
@@ -103,6 +104,7 @@ class UserUpdateInfo(UpdateView):
         context = super().get_context_data(**kwargs)
         context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                 {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
                                 {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                     {'title': 'Новая страница', 'url_name': 'posts:new_post'},
@@ -112,3 +114,12 @@ class UserUpdateInfo(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        image = form.cleaned_data['avatar']
+        print(image)
+        if image:
+            user.avatar = image
+            user.save()
+        return super().form_valid(form)

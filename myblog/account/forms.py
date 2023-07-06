@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, PasswordResetForm, PasswordChangeForm, \
     UserCreationForm
 from django import forms
-
 from .models import User
 
 
@@ -27,11 +26,12 @@ class UserPasswordResetForm(PasswordResetForm):
     """
 
     def __init__(self, *args, **kwargs):
-        super(UserPasswordResetForm).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     email = forms.EmailField(widget=forms.PasswordInput(
         attrs={'class': 'form-control',
                'placeholder': 'Email',
+               'type': 'email'
                }))
 
 
@@ -86,6 +86,7 @@ class UserUpdateForm(forms.ModelForm):
             'email': 'Email',
         }
         widgets = {
+            'avatar': forms.FileInput(attrs={'class': 'uploadFile img'}),
             'nickname': forms.TextInput(attrs={'class': 'field-update-form'}),
             'last_name': forms.TextInput(attrs={'class': 'field-update-form'}),
             'first_name': forms.TextInput(attrs={'class': 'field-update-form'}),

@@ -84,9 +84,13 @@ class PostDetail(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                           {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                           {'title': 'Войти', 'url_name': 'account:login'}]
+        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
+                                {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                    {'title': 'Войти', 'url_name': 'account:login'}]
         context['title'] = self.object.title
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -113,9 +117,13 @@ class UpdatePost(UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                           {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                           {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
+                                {'title': 'Выйти', 'url_name': 'account:logout'}]
+        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
+                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
+                                    {'title': 'Войти', 'url_name': 'account:login'}]
         context['title'] = 'Новая страница'
         header = get_header(context['title'])
         context['header_first'] = header['first']
