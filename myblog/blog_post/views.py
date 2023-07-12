@@ -31,7 +31,8 @@ class Posts(ListView):
                                 {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                     {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'}]
+                                    {'title': 'Войти', 'url_name': 'account:login'},
+                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
         context['title'] = 'Страницы из дневника'
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -90,7 +91,8 @@ class PostDetail(DetailView):
                                 {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                     {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'}]
+                                    {'title': 'Войти', 'url_name': 'account:login'},
+                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
         context['title'] = self.object.title
         header = get_header(context['title'])
         context['header_first'] = header['first']
@@ -123,7 +125,8 @@ class UpdatePost(UserPassesTestMixin, UpdateView):
                                 {'title': 'Выйти', 'url_name': 'account:logout'}]
         context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
                                     {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'}]
+                                    {'title': 'Войти', 'url_name': 'account:login'},
+                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
         context['title'] = 'Новая страница'
         header = get_header(context['title'])
         context['header_first'] = header['first']

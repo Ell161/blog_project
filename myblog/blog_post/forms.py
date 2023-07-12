@@ -11,12 +11,13 @@ class BlogPostForm(ModelForm):
             'label': 'Опубликовать'})
         self.fields['title'].widget = TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Название страницы'})
+            'placeholder': 'Название страницы',
+            'autocomplete': 'off'})
         self.fields['text'].widget = Textarea(attrs={
             'class': 'form-control',
-            'placeholder': 'Содержание'})
+            'placeholder': 'Содержание',
+            'autocomplete': 'off'})
 
     class Meta:
         model = BlogPost
         fields = ('page_picture', 'is_published', 'title', 'text',)
-

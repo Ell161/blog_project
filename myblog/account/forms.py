@@ -10,10 +10,10 @@ class UserLoginForm(AuthenticationForm):
         super(UserLoginForm, self).__init__(*args, **kwargs)
 
     username = UsernameField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'Адрес электронной почты'}))
+        attrs={'class': 'field-update-form', 'placeholder': 'Адрес электронной почты'}))
     password = forms.CharField(widget=forms.PasswordInput(
         attrs={
-            'class': 'form-control',
+            'class': 'field-update-form',
             'placeholder': 'Пароль',
         }
     ))
@@ -29,7 +29,7 @@ class UserPasswordResetForm(PasswordResetForm):
         super().__init__(*args, **kwargs)
 
     email = forms.EmailField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control',
+        attrs={'class': 'field-update-form',
                'placeholder': 'Email',
                'type': 'email'
                }))
@@ -45,28 +45,38 @@ class UserPasswordChangeForm(PasswordChangeForm):
         super(UserPasswordChangeForm).__init__(*args, **kwargs)
 
     new_password1 = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control',
+        attrs={'class': 'field-update-form',
                'placeholder': 'Новый пароль',
+               'autocomplete': 'off'
                }))
     new_password2 = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control',
+        attrs={'class': 'field-update-form',
                'placeholder': 'Повторите пароль',
+               'autocomplete': 'off'
                }))
 
 
 class RegisterUserForm(UserCreationForm):
     nickname = forms.CharField(label='', required=True,
                                widget=forms.TextInput(
-                                   attrs={'class': 'form-control', 'placeholder': 'Никнейм'}))
+                                   attrs={'class': 'field-update-form',
+                                          'placeholder': 'Никнейм',
+                                          'autocomplete': 'off'}))
     email = forms.EmailField(label='', required=True,
                              widget=forms.EmailInput(
-                                 attrs={'class': 'form-control', 'placeholder': 'Email'}))
+                                 attrs={'class': 'field-update-form',
+                                        'placeholder': 'Email',
+                                        'autocomplete': 'off'}))
     password1 = forms.CharField(label='', required=True,
                                 widget=forms.PasswordInput(
-                                    attrs={'class': 'form-control', 'placeholder': 'Введите пароль'}))
+                                    attrs={'class': 'field-update-form',
+                                           'placeholder': 'Введите пароль',
+                                           'autocomplete': 'new-password'}))
     password2 = forms.CharField(label='', required=True,
                                 widget=forms.PasswordInput(
-                                    attrs={'class': 'form-control', 'placeholder': 'Повторите пароль'}))
+                                    attrs={'class': 'field-update-form',
+                                           'placeholder': 'Повторите пароль',
+                                           'autocomplete': 'new-password'}))
 
     class Meta:
         model = User
