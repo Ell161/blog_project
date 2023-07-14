@@ -32,7 +32,11 @@ body {
 <div class="personal-block  wow fadeInDown">
 		<div class="personal-photo">
 			<div class="avatar">
+				{% if user.avatar %}
 				<img src="{{ user.avatar.url }}" class="img-avatar" alt="Avatar">
+				{% else %}
+				<img src="{% static 'account/images/blog/avatar.png' %}" class="img-avatar" alt="Avatar">
+				{% endif %}
 			</div>
 		</div>
 		<div class="personal-info">

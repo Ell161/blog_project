@@ -3,10 +3,10 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block header %}
-	<ul class="navbar-nav navigation-menu ml-auto">
+	<ul class="navigation-menu ml-auto">
 	{% for element in menu %}
-		<li class="nav-item">
-		<a class="nav-link" href="{% url element.url_name %}">{{ element.title }}</a>
+		<li>
+		<a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
 		</li>
 	{% endfor %}
 	</ul>

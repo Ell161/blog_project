@@ -7,12 +7,12 @@
 {% block header %}
 {% if request.user.is_authenticated %}
 <div class="buttons">
-    <button class="post-buttons"><a href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
-    <button class="post-buttons"><a href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
+    <button class="post-buttons"><a class="focus-blue" href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
+    <button class="post-buttons"><a class="focus-white" href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
 </div>
 <ul class="navigation-menu ml-auto">
     {% for element in menu_auth %}
-    <li class="nav-item">
+    <li>
         <a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
     </li>
     {% endfor %}
