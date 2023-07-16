@@ -52,7 +52,7 @@ body {
 		<ol>
 			{% for post in posts %}
 			<li class="list-item-page">
-				<span class="text-center"><a href="{% url 'posts:post-detail' post.pk %}">{{ post.title }}</a><span class="date-page">{{ post.timestamp }}</span></span>
+				<span class="text-center"><a href="{% url 'posts:post-detail' post.slug %}">{{ post.title }}</a><span class="date-page">{{ post.timestamp }}</span></span>
 			</li>
 			{% endfor %}
 		</ol>

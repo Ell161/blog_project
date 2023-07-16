@@ -3,60 +3,71 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block header %}
-	<ul class="navigation-menu ml-auto">
-	{% for element in menu %}
-		<li>
-		<a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
-		</li>
-	{% endfor %}
-	</ul>
+{% if request.user.is_authenticated %}
+<ul class="navigation-menu ml-auto">
+    {% for element in menu_auth %}
+    <li>
+        <a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<ul class="navigation-menu ml-auto">
+    {% for element in menu_not_auth %}
+    <li>
+        <a class="navigate-link" href="{% url element.url_name %}">{{ element.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <section class="section">
-  <div class="s-container">
-	  <div class="col-lg-12">
-        <!-- section title -->
-        <div class="title text-center wow fadeInDown">
-          <h2>{{ header_first }}<span class="color"> {{ header_second }}</span></h2>
-          <div class="border"></div>
+    <div class="s-container">
+        <div class="col-lg-12">
+            <!-- section title -->
+            <div class="title text-center wow fadeInDown">
+                <h2>{{ header_first }}<span class="color"> {{ header_second }}</span></h2>
+                <div class="border"></div>
+            </div>
+            <!-- /section title -->
         </div>
-        <!-- /section title -->
-      </div>
-    <div class="post-form">
-      <div class="col-lg-12 text-center">
-        <h1 class="quote text-center">{{ thing }}</h1>
-      </div>
-		<div class="contact-form col-lg-6 mt-4 mt-lg-0 wow fadeInUp" data-wow-duration="500ms" data-wow-delay="300ms">
-			<form id="contact-form" method="post" enctype='multipart/form-data'>
-				{% csrf_token %}
-				{% for field in form %}
-				{% if field == form.page_picture %}
-				<div class="upload">
-				<label class="input-file">
-					{{ field }}
-					<span>Выберите файл</span>
-				</label>
-				{% else %}
-					{% if field == form.is_published %}
-					<label>
-						{{ field }}
-						<span class="pseudocheckbox">{{ field.label }}</span>
-					</label>
-				</div>
-				{% else %}
-				<div class="form-group">
-					{{ field }}
-				</div>
-				{% endif %}
-				{% endif %}
-				{% endfor %}
-				<div id="cf-submit">
-					<input type="submit" class="btn btn-transparent" value="Сохранить">
-				</div>
-			</form>
-		</div>
+        <div class="post-form">
+            <div class="col-lg-12 text-center">
+                <h1 class="quote text-center">{{ thing }}</h1>
+            </div>
+            <div class="contact-form col-lg-6 mt-4 mt-lg-0 wow fadeInUp" data-wow-duration="500ms"
+                 data-wow-delay="300ms">
+                <form id="contact-form" method="post" enctype='multipart/form-data'>
+                    {% csrf_token %}
+                    {% for field in form %}
+                    {% if field == form.page_picture %}
+                    <div class="upload">
+                        <label class="input-file">
+                            {{ field }}
+                            <span>Выберите файл</span>
+                        </label>
+                        {% else %}
+                        {% if field == form.is_published %}
+                        <label>
+                            {{ field }}
+                            <span class="pseudocheckbox">{{ field.label }}</span>
+                        </label>
+                    </div>
+                    {% else %}
+                    <div class="form-group">
+                        {{ field }}
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    <div id="cf-submit">
+                        <input type="submit" class="btn btn-transparent" value="Сохранить">
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 {% endblock %}

@@ -41,13 +41,14 @@ class User(AbstractUser):
     def user_directory_path(self, filename):
         filename = filename.split('.')
         last = filename.pop()
-        return 'avatars/user_{0}/{1}'.format(self.pk, '.'.join(['photo', last]))
+        return 'avatars/user_{0}/{1}'.format(self.slug, '.'.join(['photo', last]))
 
     username = None
     ordering = ('email',)
 
     email = models.EmailField(_('email address'), blank=False, unique=True)
     nickname = models.CharField(_('nickname'), max_length=30, blank=False, unique=True)
+    slug = models.SlugField(max_length=30, unique=True, db_index=True, verbose_name='URL')
     last_name = models.CharField(_('surname'), max_length=30, blank=True)
     first_name = models.CharField(_('name'), max_length=30, blank=True)
     birthday = models.DateField(_("birthday"), blank=True, null=True)
@@ -69,10 +70,13 @@ class User(AbstractUser):
         return self.email
 
     def save(self, *args, **kwargs):
+        from django.utils.text import slugify
         try:
             this = User.objects.get(id=self.pk)
             if this.avatar != self.avatar:
                 this.avatar.delete()
         except:
             pass
+        if not self.slug:
+            self.slug = slugify(self.nickname)
         super(User, self).save(*args, **kwargs)

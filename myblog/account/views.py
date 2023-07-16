@@ -1,13 +1,11 @@
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import request
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
-
+from django.views.generic import CreateView, ListView, UpdateView
 from .forms import *
 from blog_post.models import BlogPost
+from .utils import DataMixin
 
 
 class UserLoginView(LoginView):
@@ -30,7 +28,7 @@ class UserLogoutView(LogoutView):
     next_page = 'posts:posts'
 
 
-class ResetPasswordView(SuccessMessageMixin, PasswordResetView): #Ошибка аргументов - исправить
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):  # Ошибка аргументов - исправить
     """
     Changing the user's password.
     """
@@ -44,10 +42,6 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView): #Ошибка �
     extra_context = {'title': 'Сброс пароля'}
     extra_email_context = {'product': 'MySecret'}
     form_class = UserPasswordResetForm
-
-
-#    def get_success_url(self):
-#        return reverse_lazy('profile_detail', kwargs={'slug': self.request.user.profile.slug})
 
 
 class ResetPasswordConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
@@ -72,7 +66,7 @@ class RegisterUserView(CreateView):
         return context
 
 
-class UserPostListView(ListView):
+class UserPostListView(DataMixin, ListView):
     model = BlogPost
     template_name = 'account/personal_page.html'
     context_object_name = 'posts'
@@ -84,17 +78,11 @@ class UserPostListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'}]
-        context['title'] = 'Личный кабинет'
-        return context
+        base_context = self.get_user_context(title='Личный кабинет')
+        return dict(list(context.items()) + list(base_context.items()))
 
 
-class UserUpdateInfo(UpdateView):
+class UserUpdateInfo(DataMixin, UpdateView):
     context_object_name = 'variable_used_in `update.html`'
     form_class = UserUpdateForm
     template_name = 'account/personal_info_update.html'
@@ -102,15 +90,8 @@ class UserUpdateInfo(UpdateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
-                                {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'}]
-        context['title'] = 'Личный кабинет'
-        return context
+        base_context = self.get_user_context(title='Личный кабинет')
+        return dict(list(context.items()) + list(base_context.items()))
 
     def get_object(self, queryset=None):
         return self.request.user

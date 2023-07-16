@@ -5,11 +5,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block header %}
-{% if request.user.is_authenticated %}
+{% if request.user.id == post.author.id %}
 <div class="buttons">
-    <button class="post-buttons"><a class="focus-blue" href="{% url 'posts:update_post' post.pk %}">Редактировать</a></button>
-    <button class="post-buttons"><a class="focus-white" href="{% url 'posts:delete_post' post.pk %}">Удалить</a></button>
+    <button class="post-buttons"><a class="focus-blue" href="{% url 'posts:update_post' post.slug %}">Редактировать</a></button>
+    <button class="post-buttons"><a class="focus-white" href="{% url 'posts:delete_post' post.slug %}">Удалить</a></button>
 </div>
+{% endif %}
+{% if request.user.is_authenticated %}
 <ul class="navigation-menu ml-auto">
     {% for element in menu_auth %}
     <li>

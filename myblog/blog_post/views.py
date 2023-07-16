@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from .forms import BlogPostForm
 from .models import BlogPost
+from account.utils import DataMixin, things
 
 
 def get_header(header: str) -> Dict:
@@ -17,7 +18,7 @@ def get_header(header: str) -> Dict:
     return context
 
 
-class Posts(ListView):
+class Posts(DataMixin, ListView):
     model = BlogPost
     template_name = 'blog_post/blog.html'
     context_object_name = 'posts'
@@ -25,47 +26,29 @@ class Posts(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
-                                {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'},
-                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
-        context['title'] = 'Страницы из дневника'
-        header = get_header(context['title'])
-        context['header_first'] = header['first']
-        context['header_second'] = header['second']
-        return context
+        header = get_header('Страницы из дневника')
+        base_context = self.get_user_context(title='Страницы из дневника',
+                                             header_first=header['first'],
+                                             header_second=header['second'])
+        return dict(list(context.items()) + list(base_context.items()))
 
     def get_queryset(self):
         return BlogPost.objects.filter(is_published=True)
 
 
-class CreatePost(LoginRequiredMixin, CreateView):
+class CreatePost(DataMixin, LoginRequiredMixin, CreateView):
     template_name = 'blog_post/create_post.html'
     form_class = BlogPostForm
-    things = ['От счастья до депрессии – одна мысль. (Б. Спиноза)',
-              'Душа, в отличие от разума, не думает и не рассуждает — она чувствует и знает, поэтому не ошибается.',
-              'Навязчивые мысли грызут так же упорно, как неизлечимые болезни. Внедрившись однажды в душу, '
-              'они пожирают ее, не дают ни о чем думать, ничем интересоваться. (Ги де Мопассан)',
-              'Столько есть всего, о чём надо подумать. Зачем забивать себе голову тем, чего уже не вернёшь, '
-              '— надо думать о том, что ещё можно изменить. (Маргарет Митчелл)',
-              '— Почему ты все время думаешь? — Потому что мир в моей голове интереснее, чем этот.',
-              'Она вовсе не выбирала его. Просто ни о ком другом она не думала...']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                           {'title': 'Личный кабинет', 'url_name': 'account:account'},
-                           {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['title'] = 'Новая страница'
-        header = get_header(context['title'])
-        context['header_first'] = header['first']
-        context['header_second'] = header['second']
-        context['thing'] = random.choice(self.things)
-        return context
+        thing = random.choice(things)
+        header = get_header('Новая страница')
+        base_context = self.get_user_context(title='Новая страница',
+                                             header_first=header['first'],
+                                             header_second=header['second'],
+                                             thing=thing)
+        return dict(list(context.items()) + list(base_context.items()))
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -73,73 +56,41 @@ class CreatePost(LoginRequiredMixin, CreateView):
         instance.save()
         return super().form_valid(form)
 
-    def get_success_url(self) -> str:
-        return reverse('posts:post-detail', kwargs={'id': self.object.pk})
 
-
-class PostDetail(DetailView):
+class PostDetail(DataMixin, DetailView):
     model = BlogPost
     template_name = 'blog_post/blog-single.html'
     context_object_name = 'post'
-    pk_url_kwarg = 'id'
+    slug_url_kwarg = 'post_slug'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
-                                {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'},
-                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
-        context['title'] = self.object.title
-        header = get_header(context['title'])
-        context['header_first'] = header['first']
-        context['header_second'] = header['second']
-        return context
+        header = get_header(self.object.title)
+        base_context = self.get_user_context(title=self.object.title,
+                                             header_first=header['first'],
+                                             header_second=header['second'])
+        return dict(list(context.items()) + list(base_context.items()))
 
 
-class UpdatePost(UserPassesTestMixin, UpdateView):
+class UpdatePost(DataMixin, UserPassesTestMixin, UpdateView):
     model = BlogPost
     template_name = 'blog_post/create_post.html'
     form_class = BlogPostForm
-    pk_url_kwarg = 'id'
-    things = ['От счастья до депрессии – одна мысль. (Б. Спиноза)',
-              'Душа, в отличие от разума, не думает и не рассуждает — она чувствует и знает, поэтому не ошибается.',
-              'Навязчивые мысли грызут так же упорно, как неизлечимые болезни. Внедрившись однажды в душу, '
-              'они пожирают ее, не дают ни о чем думать, ничем интересоваться. (Ги де Мопассан)',
-              'Столько есть всего, о чём надо подумать. Зачем забивать себе голову тем, чего уже не вернёшь, '
-              '— надо думать о том, что ещё можно изменить. (Маргарет Митчелл)',
-              '— Почему ты все время думаешь? — Потому что мир в моей голове интереснее, чем этот.',
-              'Она вовсе не выбирала его. Просто ни о ком другом она не думала...',
-              'Не ждите. Время никогда не будет подходящим.',
-              'Служба поддержки текущей действительности у аппарата. Какие иллюзии вам требуется развеять?',
-              'Есенин писал: "Своею гордою душою, прошел я счастье стороной"...задумайтесь.']
+    slug_url_kwarg = 'post_slug'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                {'title': 'Личный кабинет', 'url_name': 'account:account'},
-                                {'title': 'Выйти', 'url_name': 'account:logout'}]
-        context['menu_not_auth'] = [{'title': 'MySecret', 'url_name': 'posts:posts'},
-                                    {'title': 'Новая страница', 'url_name': 'posts:new_post'},
-                                    {'title': 'Войти', 'url_name': 'account:login'},
-                                    {'title': 'Регистрация', 'url_name': 'account:register'}]
-        context['title'] = 'Новая страница'
-        header = get_header(context['title'])
-        context['header_first'] = header['first']
-        context['header_second'] = header['second']
-        context['thing'] = random.choice(self.things)
-        return context
+        thing = random.choice(things)
+        header = get_header(self.object.title)
+        base_context = self.get_user_context(title=self.object.title,
+                                             header_first=header['first'],
+                                             header_second=header['second'],
+                                             thing=thing)
+        return dict(list(context.items()) + list(base_context.items()))
 
     def get_initial(self):
-        data = BlogPost.objects.get(pk=self.kwargs.get('id'))
+        data = BlogPost.objects.get(slug=self.kwargs.get('post_slug'))
         return {'title': data.title, 'text': data.text}
-
-    def get_success_url(self) -> str:
-        return reverse('posts:post-detail', kwargs={'id': self.object.pk})
 
     def test_func(self):
         return self.get_object().author_id == self.request.user.pk
@@ -148,7 +99,6 @@ class UpdatePost(UserPassesTestMixin, UpdateView):
 class DeletePost(UserPassesTestMixin, DeleteView):
     model = BlogPost
     success_url = reverse_lazy('posts:posts')
-    pk_url_kwarg = 'id'
 
     def get(self, request, *args, **kwargs):
         return self.delete(request, *args, **kwargs)
@@ -158,4 +108,3 @@ class DeletePost(UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.get_object().author_id == self.request.user.pk
-

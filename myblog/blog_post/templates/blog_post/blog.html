@@ -38,13 +38,18 @@
             <article class="col-lg-4 mb-30 clearfix wow fadeInUp" data-wow-duration="500ms">
                 <div class="post-block">
                     <div class="media-wrapper">
+                        {% if post.page_picture %}
+                        <img src="{{ post.page_picture.url }}" alt="amazing caves coverimage"
+                             class="w-100">
+                        {% else %}
                         <img src="{% static 'blog_post/images/blog/blog-post-1.jpg' %}" alt="amazing caves coverimage"
                              class="w-100">
+                        {% endif %}
                     </div>
                     <div class="content">
-                        <h3><a class="focus-blue" href="{% url 'posts:post-detail' post.pk %}">{{ post.title|truncatechars:50 }}</a></h3>
+                        <h3><a class="focus-blue" href="{{ post.get_absolute_url }}">{{ post.title|truncatechars:50 }}</a></h3>
                         <p>{{ post.text|truncatechars:155 }}</p>
-                        <a class="btn btn-transparent" href="{% url 'posts:post-detail' post.pk %}">Читать дальше</a>
+                        <a class="btn btn-transparent" href="{{ post.get_absolute_url }}">Читать дальше</a>
                     </div>
                 </div>
             </article>
